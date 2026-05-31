@@ -9,4 +9,9 @@ class Borrowings extends Model
 {
     /** @use HasFactory<\Database\Factories\BorrowingsFactory> */
     use HasFactory;
+
+    public function borrowing()
+    {
+        return $this->belongsTo(Author::class);
+    }
 }

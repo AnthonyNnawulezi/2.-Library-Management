@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreAuthorRequest;
+use App\Http\Requests\UpdateAuthorRequest;
 use App\Http\Resources\AuthorResource;
 use App\Models\Author;
-use Illuminate\Http\Request;
+
 
 class AuthorController extends Controller
 {
@@ -21,29 +23,45 @@ class AuthorController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request) {}
+    public function store(StoreAuthorRequest $request)
+    {
+        $request->validated();
+        $authors = Author::create([
+            'name' => $request->name,
+            'bio' => $request->bio,
+            'nationality' => $request->nationality,
+        ]);
+        return new AuthorResource($authors);
+    }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Author $author)
     {
-        //
+        return new AuthorResource($author);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateAuthorRequest $request, Author $author)
     {
-        //
+        $author->update($request->validated());
+        return response()->json([
+            'Author' => new AuthorResource($author),
+            'message' => 'Author updated successfully',
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Author $author)
     {
-        //
+        $author->delete();
+        return response()->json([
+            'Author deleted successfully'
+        ]);
     }
 }

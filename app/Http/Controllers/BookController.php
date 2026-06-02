@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\BookResource;
 use App\Models\Book;
 use Illuminate\Http\Request;
 
@@ -12,16 +13,23 @@ class BookController extends Controller
      */
     public function index(Request $request)
     {
-        $book = Book::with('authors', 'isAvailable', 'returnBook', 'borrow')->paginate(10);
+        $query = Book::with('author');
 
-if($request->filled('search')){
-    $query = Book::with('author');
-    $search = $request->search;
-    
-    $query->where('title', 'like', '%search%')->orWhere('isbn', 'like', '%search%')->orWhereHas('authors', function ($q) use $search{
-        $q->where('name', 'like', "%search%");
-    });
-}
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', '%$search%')->orWhere('isbn', 'like', '%$search%')->orWhereHas('authors', function ($q) use ($search) {
+                    $q->where('name', 'like', '%$search%');
+                });
+            });
+        }
+        if ($request->filled('genre')) {
+            $query->where('genre', 'like', '%search%');
+        }
+
+        $book = $query->paginate(10);
+        return new BookResource($book);
     }
 
     /**

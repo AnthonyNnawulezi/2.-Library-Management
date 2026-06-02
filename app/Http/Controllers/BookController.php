@@ -29,7 +29,7 @@ class BookController extends Controller
         }
 
         $book = $query->paginate(10);
-        return new BookResource($book);
+        return BookResource::collection($book);
     }
 
     /**

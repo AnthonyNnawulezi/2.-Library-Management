@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BookRequest;
 use App\Http\Resources\BookResource;
 use App\Models\Book;
 use Illuminate\Http\Request;
@@ -19,7 +20,7 @@ class BookController extends Controller
             $search = trim($request->search);
 
             $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', '%$search%')->orWhere('isbn', 'like', '%$search%')->orWhereHas('authors', function ($q) use ($search) {
+                $q->where('title', 'like', '%$search%')->orWhere('isbn', 'like', '%$search%')->orWhereHas('author', function ($q) use ($search) {
                     $q->where('name', 'like', '%$search%');
                 });
             });
@@ -35,9 +36,10 @@ class BookController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(BookRequest $request)
     {
-        //
+        $book = Book::create($request->validated());
+        return new BookResource($book);
     }
 
     /**

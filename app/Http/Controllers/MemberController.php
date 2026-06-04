@@ -7,7 +7,6 @@ use App\Http\Requests\UpdateMemberRequest;
 use App\Http\Resources\MemberResource;
 use App\Models\Member;
 use App\Models\Members;
-use Illuminate\Http\Request;
 
 class MemberController extends Controller
 {

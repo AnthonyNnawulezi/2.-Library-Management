@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Borrowings;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -21,6 +22,7 @@ class MemberResource extends JsonResource
             'membership_date' => $this->membership_date,
             'status' => $this->status,
             'phone' => $this->phone,
+            'active borrowings' => Borrowings::whenLoaded('activeBorrowings')->count()
         ];
     }
 }

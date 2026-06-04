@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\MemberResource;
+use App\Models\Members;
 use Illuminate\Http\Request;
 
 class MemberController extends Controller
@@ -9,7 +11,11 @@ class MemberController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index() {}
+    public function index()
+    {
+        $members = Members::with('borrowings', 'activeBorrowings');
+        return MemberResource::collection($members);
+    }
 
     /**
      * Store a newly created resource in storage.

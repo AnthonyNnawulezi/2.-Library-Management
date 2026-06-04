@@ -21,7 +21,7 @@ class Members extends Model
 
     protected $casts = [
         'membership_date' => 'date',
-        'phone' => 'integer'
+        'phone' => 'string'
     ];
 
     public function borrowings()

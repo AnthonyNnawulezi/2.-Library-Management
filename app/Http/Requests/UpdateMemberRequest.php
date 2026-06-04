@@ -23,7 +23,12 @@ class UpdateMemberRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required|string|max:255',
+            'email' => 'required|unique:members,email',
+            'address' => 'string|nullable',
+            'membership_date' => 'date|nullable',
+            'status' => 'string',
+            'phone' => 'string|nullable|max:12'
         ];
     }
 }

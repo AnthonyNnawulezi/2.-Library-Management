@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreMemberRequest;
 use App\Http\Requests\UpdateMemberRequest;
 use App\Http\Resources\MemberResource;
-use App\Models\Member;
 use App\Models\Members;
 
 class MemberController extends Controller
@@ -22,7 +21,7 @@ class MemberController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreMemberRequest $request, Member $member)
+    public function store(StoreMemberRequest $request, Members $member)
     {
         $member->create($request->validated());
         return response()->json([
@@ -35,7 +34,7 @@ class MemberController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Member $member)
+    public function show(Members $member)
     {
         return new MemberResource($member);
     }
@@ -56,7 +55,7 @@ class MemberController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Member $member)
+    public function destroy(Members $member)
     {
         $member->delete();
         return response()->noContent();

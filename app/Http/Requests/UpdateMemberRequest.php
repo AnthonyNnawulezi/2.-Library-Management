@@ -27,7 +27,7 @@ class UpdateMemberRequest extends FormRequest
             'email' => 'required|unique:members,email',
             'address' => 'string|nullable',
             'membership_date' => 'date|nullable',
-            'status' => 'string',
+            'status' => 'string|in:active,inactive',
             'phone' => 'string|nullable|max:12'
         ];
     }

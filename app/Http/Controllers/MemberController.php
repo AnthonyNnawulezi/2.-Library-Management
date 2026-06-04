@@ -42,7 +42,7 @@ class MemberController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateMemberRequest $request, Member $member)
+    public function update(UpdateMemberRequest $request, Members $member)
     {
         $member->create($request->validated());
         return response()->json([

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreMemberRequest;
 use App\Http\Requests\UpdateMemberRequest;
 use App\Http\Resources\MemberResource;
-use App\Models\Members;
+use App\Models\Member;
 
 class MemberController extends Controller
 {
@@ -14,16 +14,16 @@ class MemberController extends Controller
      */
     public function index()
     {
-        $members = Members::with('borrowings', 'activeBorrowings');
+        $members = Member::with('borrowings', 'activeBorrowings')->paginate(10);
         return MemberResource::collection($members);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreMemberRequest $request, Members $member)
+    public function store(StoreMemberRequest $request)
     {
-        $member->create($request->validated());
+        $member = Member::create($request->validated())->load('borrowings', 'activeBorrowings');
         return response()->json([
             'Success' => 'true',
             'Member' => new MemberResource($member),
@@ -34,7 +34,7 @@ class MemberController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Members $member)
+    public function show(Member $member)
     {
         return new MemberResource($member);
     }
@@ -42,22 +42,27 @@ class MemberController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateMemberRequest $request, Members $member)
+    public function update(UpdateMemberRequest $request, Member $member)
     {
-        $member->create($request->validated());
+        $member->update($request->validated());
+        $member->load('borrowings', 'activeBorrowings');
         return response()->json([
             'Success' => 'true',
             'Member' => new MemberResource($member),
-            'Message' => 'Member created successfully',
+            'Message' => 'Member Updated successfully',
         ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Members $member)
+    public function destroy(Member $member)
     {
         $member->delete();
         return response()->noContent();
+        // return response()->json([
+        //     'Message' => 'Member deleted successfully',
+        //     'Success' => true,
+        // ]);
     }
 }

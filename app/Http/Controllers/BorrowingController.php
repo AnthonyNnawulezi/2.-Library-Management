@@ -8,6 +8,8 @@ use App\Http\Resources\BorrowingResource;
 use App\Models\Borrowing;
 use Illuminate\Http\Request;
 
+use function Illuminate\Support\now;
+
 class BorrowingController extends Controller
 {
     /**
@@ -59,6 +61,16 @@ class BorrowingController extends Controller
             'message' => 'Book returned successfully',
             'content' => new BorrowingResource($borrowing)
         ];
+    }
+
+    public function overDue(Borrowing $borrowing)
+    {
+        $borrowed = Borrowing::where('status', 'borrowed')->where('due_date', '<', now())->get();
+
+        Borrowing::where('status', 'borrowed')->update([
+            'status' => 'returned',
+        ]);
+        return response()->json($borrowed);
     }
 
     /**

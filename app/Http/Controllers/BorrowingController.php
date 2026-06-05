@@ -24,15 +24,13 @@ class BorrowingController extends Controller
      */
     public function store(StoreBorrowingRequest $request)
     {
-        //         under store, check if book is available for borrowing
-        // create a borrowing record and update the remaing books
         if ($request->status === 'borrowed') {
             return "Book is not available for borrowing";
         }
         $borrowing = Borrowing::create($request->validated());
         $borrowing->load('book', 'member')->borrow();
         return [
-            'message' => 'Book borrowed succesfuly',
+            'message' => 'Book borrowed successfully',
             'content' => new BorrowingResource($borrowing)
         ];
     }
@@ -58,7 +56,7 @@ class BorrowingController extends Controller
         $borrowing->book()->returnBook();
 
         return [
-            'message' => 'Book returned succesfuly',
+            'message' => 'Book returned successfully',
             'content' => new BorrowingResource($borrowing)
         ];
     }
@@ -66,8 +64,12 @@ class BorrowingController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Borrowing $request)
     {
-        //
+        $request->delete();
+        return [
+            'message' => 'Book deleted successfully',
+            'content' => new BorrowingResource($request)
+        ];
     }
 }

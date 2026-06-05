@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Borrowing;
 use Illuminate\Http\Request;
 
 class BorrowingController extends Controller
@@ -11,7 +12,8 @@ class BorrowingController extends Controller
      */
     public function index()
     {
-        //
+        $borrowings = Borrowing::with('book', 'member')->paginate(12);
+        return BorrowingResource::collection($borrowings);
     }
 
     /**
@@ -19,7 +21,8 @@ class BorrowingController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        //         under store, check if book is available for borrowing
+        // create a borrowing record and update the remaing books
     }
 
     /**

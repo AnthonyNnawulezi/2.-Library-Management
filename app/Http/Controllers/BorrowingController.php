@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreBorrowingRequest;
+use App\Http\Resources\BorrowingResource;
 use App\Models\Borrowing;
 use Illuminate\Http\Request;
 
@@ -19,26 +21,39 @@ class BorrowingController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreBorrowingRequest $request)
     {
         //         under store, check if book is available for borrowing
         // create a borrowing record and update the remaing books
+        if ($request->status === 'borrowed') {
+            return "Book is not available for borrowing";
+        }
+        $borrowing = Borrowing::create($request->validated());
+        $borrowing->load('book', 'member')->borrow();
+        return [
+            'message' => 'Book borrowed succesfuly',
+            'content' => new BorrowingResource($borrowing)
+        ];
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Borrowing $borrowing)
     {
-        //
+        $borrowing->load('book', 'member');
+        return new BorrowingResource($borrowing);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function returnBook(Request $request, Borrowing $borrowing)
     {
-        //
+        if($borrowing->status === 'borrowed'){
+            return "Please return your book";
+        }
+        $borrowing->update()
     }
 
     /**

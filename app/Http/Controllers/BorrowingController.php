@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreBorrowingRequest;
+use App\Http\Requests\UpdateBorrowingRequest;
 use App\Http\Resources\BorrowingResource;
 use App\Models\Borrowing;
 use Illuminate\Http\Request;
@@ -48,12 +49,18 @@ class BorrowingController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function returnBook(Request $request, Borrowing $borrowing)
+    public function returnBook(UpdateBorrowingRequest $request, Borrowing $borrowing)
     {
-        if($borrowing->status === 'borrowed'){
+        if ($borrowing->status === 'borrowed') {
             return "Please return your book";
         }
-        $borrowing->update()
+        $borrowing->update($request->validated());
+        $borrowing->book()->returnBook();
+
+        return [
+            'message' => 'Book returned succesfuly',
+            'content' => new BorrowingResource($borrowing)
+        ];
     }
 
     /**

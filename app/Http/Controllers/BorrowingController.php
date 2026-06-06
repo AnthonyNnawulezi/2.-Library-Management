@@ -30,7 +30,8 @@ class BorrowingController extends Controller
             return "Book is not available for borrowing";
         }
         $borrowing = Borrowing::create($request->validated());
-        $borrowing->load('book', 'member')->borrow();
+        $borrowing->load('book', 'member');
+        $borrowing->book->borrow();
         return [
             'message' => 'Book borrowed successfully',
             'content' => new BorrowingResource($borrowing)
@@ -55,7 +56,7 @@ class BorrowingController extends Controller
             return "Please return your book";
         }
         $borrowing->update($request->validated());
-        $borrowing->book()->returnBook();
+        $borrowing->book->returnBook();
 
         return [
             'message' => 'Book returned successfully',

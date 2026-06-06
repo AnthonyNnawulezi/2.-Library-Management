@@ -26,15 +26,16 @@ class BorrowingController extends Controller
      */
     public function store(StoreBorrowingRequest $request)
     {
-        if ($request->status === 'borrowed') {
+        if (!$request) {
             return "Book is not available for borrowing";
         }
         $borrowing = Borrowing::create($request->validated());
         $borrowing->load('book', 'member');
+
         $borrowing->book->borrow();
         return [
             'message' => 'Book borrowed successfully',
-            'content' => new BorrowingResource($borrowing)
+            'content' => new BorrowingResource($borrowing),
         ];
     }
 
@@ -52,7 +53,7 @@ class BorrowingController extends Controller
      */
     public function returnBook(Borrowing $borrowing)
     {
-        if ($borrowing->status !== 'borrowed') {
+        if ($borrowing->status == 'returned') {
             return "This book has already been returned";
         }
 
@@ -61,22 +62,22 @@ class BorrowingController extends Controller
             'returned_date' => now(),
         ]);
 
+        $borrowing->refresh()->load('book', 'member');
         $borrowing->book->returnBook();
 
-        return [
-            'message' => 'Book returned successfully',
-            'content' => new BorrowingResource($borrowing)
-        ];
+        return new BorrowingResource($borrowing);
     }
 
-    public function overDue(Borrowing $borrowing)
+    public function overDue()
     {
         $borrowed = Borrowing::where('status', 'borrowed')->where('due_date', '<', now())->get();
 
         Borrowing::where('status', 'borrowed')->update([
             'status' => 'returned',
         ]);
-        return response()->json($borrowed);
+
+        // return response()->json($borrowed);
+        return BorrowingResource::collection($borrowed);
     }
 
     /**

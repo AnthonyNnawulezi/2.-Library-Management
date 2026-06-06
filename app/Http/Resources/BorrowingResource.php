@@ -19,7 +19,7 @@ class BorrowingResource extends JsonResource
             'member_id' => $this->member_id,
             'borrowed_date' => $this->borrowed_date->toDateString(),
             'due_date' => $this->due_date->format('Y-M-D'),
-            'returned_date' => $this->returned_date->format('Y-M-D'),
+            'returned_date' => $this->returned_date?->format('Y-M-D'),
             'status' => $this->status,
             'book' => new BookResource($this->whenLoaded('book')),
             'member' => new MemberResource($this->whenLoaded('member')),

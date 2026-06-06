@@ -17,4 +17,4 @@ Route::apiResource('members', MemberController::class);
 Route::apiResource('borrowings', BorrowingController::class)->only('index', 'store', 'show');
 
 Route::get('/borrowings/overdue/list', [BorrowingController::class, 'overDue']);
-Route::post('/borrowings/borrowing/returnbook', [BorrowingController::class, 'returnBook']);
+Route::post('/borrowings/{borrowing}/returnbook', [BorrowingController::class, 'returnBook']);

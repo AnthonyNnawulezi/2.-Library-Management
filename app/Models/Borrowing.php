@@ -37,6 +37,6 @@ class Borrowing extends Model
 
     public function isOverdue()
     {
-        return $this->due_date > now() && $this->status === 'borrowed';
+        return $this->due_date < now() && $this->status === 'overdue';
     }
 }

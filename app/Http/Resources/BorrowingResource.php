@@ -21,8 +21,8 @@ class BorrowingResource extends JsonResource
             'due_date' => $this->due_date,
             'returned_date' => $this->returned_date,
             'status' => $this->status,
-            'book' => new BookResource($this->book),
-            'member' => new MemberResource($this->member),
+            'book' => new BookResource($this->whenLoaded('book')),
+            'member' => new MemberResource($this->whenLoaded('member')),
             'is_overdue' => $this->isOverdue(),
         ];
     }

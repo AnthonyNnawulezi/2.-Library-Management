@@ -17,9 +17,9 @@ class BorrowingResource extends JsonResource
         return [
             'book_id' => $this->book_id,
             'member_id' => $this->member_id,
-            'borrowed_date' => $this->borrowed_date,
-            'due_date' => $this->due_date,
-            'returned_date' => $this->returned_date,
+            'borrowed_date' => $this->borrowed_date->toDateString(),
+            'due_date' => $this->due_date->format('Y-M-D'),
+            'returned_date' => $this->returned_date->format('Y-M-D'),
             'status' => $this->status,
             'book' => new BookResource($this->whenLoaded('book')),
             'member' => new MemberResource($this->whenLoaded('member')),

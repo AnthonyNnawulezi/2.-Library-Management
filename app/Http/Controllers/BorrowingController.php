@@ -50,12 +50,17 @@ class BorrowingController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function returnBook(UpdateBorrowingRequest $request, Borrowing $borrowing)
+    public function returnBook(Borrowing $borrowing)
     {
-        if ($borrowing->status === 'borrowed') {
-            return "Please return your book";
+        if ($borrowing->status !== 'borrowed') {
+            return "This book has already been returned";
         }
-        $borrowing->update($request->validated());
+
+        $borrowing->update([
+            'status' => 'returned',
+            'returned_date' => now(),
+        ]);
+
         $borrowing->book->returnBook();
 
         return [

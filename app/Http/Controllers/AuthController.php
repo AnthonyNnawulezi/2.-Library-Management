@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -13,12 +14,12 @@ class AuthController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|unique:users,email|max:255',
-            'password' => 'required|password|string|max:16',
+            'password' => 'required|string|confirmed|min:12|max:16',
         ]);
 
         $user = User::create($validated);
 
-        $token = $user->createToken('auth_token')->plainTextToken();
+        $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'Success' => true,
@@ -30,24 +31,19 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|unique:users,email|max:255',
-            'password' => 'required|password|string|max:16',
+            'email' => 'required|string|email|max:255',
+            'password' => 'required|string|min:12|max:16',
         ]);
 
-        $user = User::where('email', $request->email);
-        $password = User::check('password', decrypt($request->password));
+        $user = User::where('email', $request->email)->first();
 
-        if (!$user && !$password) {
+        if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'Message' => 'Incorrect Credentials',
             ]);
         }
 
-
-        $user->create($validated);
-
-        $token = $user->createToken('auth_token')->plainTextToken();
+        $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'Success' => true,

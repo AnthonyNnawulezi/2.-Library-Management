@@ -12,9 +12,10 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    private const TOKEN_NAME = 'auth_token';
+
     public function register(RegisterRequest $request): JsonResponse
     {
-        private const TOKEN_NAME = 'auth_token';
 
         $validated = $request->validated();
 
@@ -23,13 +24,13 @@ class AuthController extends Controller
 
         $user = User::create($validated);
 
-        $token = $user->createToken(TOKEN_NAME)->plainTextToken;
+        $token = $user->createToken(self::TOKEN_NAME)->plainTextToken;
 
-       return response()->json([
+        return response()->json([
             'success' => true,
             'user'    => new UserResource($user),
             'token'   => $token,
-        ], 210)
+        ], 210);
     }
 
     public function login(LoginRequest $request): JsonResponse
@@ -46,18 +47,18 @@ class AuthController extends Controller
 
         $user->tokens()->delete();
 
-        $token = $user->createToken(TOKEN_NAME)->plainTextToken;
+        $token = $user->createToken(self::TOKEN_NAME)->plainTextToken;
 
-       return response()->json([
+        return response()->json([
             'success' => true,
             'user'    => new UserResource($user),
             'token'   => $token,
         ], 200);
     }
 
-    public function logout(): JsonResponse
+    public function logout(Request $request): JsonResponse
     {
-        auth()->user()->currentAccessToken()->delete();
+        $request->user()->currentAccessToken()->delete();
 
         return response()->json([
             'success' => true,

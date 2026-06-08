@@ -2,20 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
+    public function register(RegisterRequest $request): JsonResponse
     {
         private const TOKEN_NAME = 'auth_token';
 
         $validated = $request->validated();
 
-        //Explicitly hash the password before database insertion
+        //Explicitly hash the password before database insertion, the method in 1. library is correct too
         $validated['password'] = Hash::make($validated['password']);
 
         $user = User::create($validated);
@@ -29,27 +32,36 @@ class AuthController extends Controller
         ], 210)
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'email' => 'required|string|email|max:255',
-            'password' => 'required|string|min:12|max:16',
-        ]);
+        $validated = $request->validated();
 
         $user = User::where('email', $validated['email'])->first();
 
         if (!$user || !Hash::check($validated['password'], $user->password)) {
             return response()->json([
-                'Message' => 'Incorrect Credentials',
+                'message' => 'Incorrect Credentials',
             ], 401);
         }
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $user->tokens()->delete();
+
+        $token = $user->createToken(TOKEN_NAME)->plainTextToken;
+
+       return response()->json([
+            'success' => true,
+            'user'    => new UserResource($user),
+            'token'   => $token,
+        ], 200);
+    }
+
+    public function logout(): JsonResponse
+    {
+        auth()->user()->currentAccessToken()->delete();
 
         return response()->json([
-            'Success' => true,
-            'User' => new UserResource($user),
-            'Token' => $token,
-        ]);
+            'success' => true,
+            'message' => 'Successfully logged out.'
+        ], 200);
     }
 }

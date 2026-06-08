@@ -11,21 +11,22 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|unique:users,email|max:255',
-            'password' => 'required|string|confirmed|min:12|max:16',
-        ]);
+        private const TOKEN_NAME = 'auth_token';
+
+        $validated = $request->validated();
+
+        //Explicitly hash the password before database insertion
+        $validated['password'] = Hash::make($validated['password']);
 
         $user = User::create($validated);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken(TOKEN_NAME)->plainTextToken;
 
-        return response()->json([
-            'Success' => true,
-            'User' => new UserResource($user),
-            'Token' => $token,
-        ]);
+       return response()->json([
+            'success' => true,
+            'user'    => new UserResource($user),
+            'token'   => $token,
+        ], 210)
     }
 
     public function login(Request $request)

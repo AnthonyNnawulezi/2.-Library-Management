@@ -179,7 +179,6 @@ class BorrowingController extends Controller
 
     public function destroy(Borrowing $borrowing): JsonResponse
     {
-        // Optional: prevent deletion if book is still borrowed
         if ($borrowing->status === 'borrowed') {
             return response()->json([
                 'message' => 'Cannot delete a borrowing that is still active'
